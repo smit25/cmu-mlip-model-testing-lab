@@ -4,12 +4,23 @@
 # !pip install zeno_client
 from zeno_client import ZenoClient, ZenoMetric
 import pandas as pd
+import os
 
 df = pd.read_csv('tweets.csv')
 df = df.reset_index()
 
+def load_env_file(filepath=".env"):
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"The file {filepath} does not exist.")
+    with open(filepath, "r") as file:
+        for line in file:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                os.environ[key] = value
+
+load_env_file()
 # Initialize a client with the API key.
-client = ZenoClient(API_KEY)
+client = ZenoClient(os.getenv("API_KEY"))
 
 project = client.create_project(
     name="Tweet Sentiment Analysis",
